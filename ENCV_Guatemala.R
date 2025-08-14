@@ -104,13 +104,13 @@ plot_data <- data |>
     ind = factor(ind, levels = c("electricity", "sanitation", "water","attendance" ,"non_poor"),
                  labels = c("Electricity", "Sanitation",
                             "Drinking water",  "Educational enrollment","Monetary self-reliance")),
-    group = ifelse(idp, "IDP", "Host")
+    group = ifelse(idp, "NDP", "Host")
   )
 
 # Plot in Colombia style
 ggplot(plot_data, aes(x = p, y = ind)) +
   # Bars for IDP
-  geom_col(data = subset(plot_data, group == "IDP"),
+  geom_col(data = subset(plot_data, group == "NDP"),
            aes(fill = group),
            width = 0.8) +
   # Dots for Host
@@ -118,7 +118,7 @@ ggplot(plot_data, aes(x = p, y = ind)) +
              aes(color = group),
              size = 3,
              position = position_dodge(width = 0.6)) +
-  scale_fill_manual(values = c("IDP" = "#0072BC")) +
+  scale_fill_manual(values = c("NDP" = "#0072BC")) +
   scale_color_manual(values = c("Host" = "#B41C37")) +
   scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
   labs(
@@ -136,7 +136,6 @@ ggplot(plot_data, aes(x = p, y = ind)) +
     axis.text.y = element_text(size = 10),
     axis.title.y = element_blank(),
     title = element_blank()
-  )
 
 ggsave("C:/Users/LEOPOLD/OneDrive - UNHCR/Work/2_EGRISS/ENCV Guatemala/ach_figure.png", width = 6, height = 3.5, dpi = 300)
 
