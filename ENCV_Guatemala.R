@@ -90,9 +90,13 @@ poverty_rate <- 1 - weighted.mean(data$non_poor, w = data$FACTOR * data$TOTAL_PE
 data_host <- data %>%
   filter(idp==F) 
   
-benchmark <- mean(data_host$achievement, na.rm = T)
-  
+#benchmark <- mean(data_host$achievement, na.rm = T)
 
+benchmark <- weighted.mean(
+  data_host$achievement,
+  data_host$FACTOR * data_host$TOTAL_PERS,
+  na.rm = TRUE
+)
 
 plot_data <- data |>
   summarize(.by = idp,
@@ -104,22 +108,22 @@ plot_data <- data |>
     ind = factor(ind, levels = c("electricity", "sanitation", "water","attendance" ,"non_poor"),
                  labels = c("Electricity", "Sanitation",
                             "Drinking water",  "Educational enrollment","Monetary self-reliance")),
-    group = ifelse(idp, "NDP", "Host")
+    group = ifelse(idp, "IDP", "NDP")
   )
 
 # Plot in Colombia style
 ggplot(plot_data, aes(x = p, y = ind)) +
   # Bars for IDP
-  geom_col(data = subset(plot_data, group == "NDP"),
+  geom_col(data = subset(plot_data, group == "IDP"),
            aes(fill = group),
            width = 0.8) +
   # Dots for Host
-  geom_point(data = subset(plot_data, group == "Host"),
+  geom_point(data = subset(plot_data, group == "NDP"),
              aes(color = group),
              size = 3,
              position = position_dodge(width = 0.6)) +
-  scale_fill_manual(values = c("NDP" = "#0072BC")) +
-  scale_color_manual(values = c("Host" = "#B41C37")) +
+  scale_fill_manual(values = c("IDP" = "#0072BC")) +
+  scale_color_manual(values = c("NDP" = "#B41C37")) +
   scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
   labs(
     x = "",
@@ -136,8 +140,9 @@ ggplot(plot_data, aes(x = p, y = ind)) +
     axis.text.y = element_text(size = 10),
     axis.title.y = element_blank(),
     title = element_blank()
+  )
 
-ggsave("C:/Users/LEOPOLD/OneDrive - UNHCR/Work/2_EGRISS/ENCV Guatemala/ach_figure.png", width = 6, height = 3.5, dpi = 300)
+ggsave("C:/Users/LEOPOLD/OneDrive - UNHCR/Work/2_EGRISS/ENCV Guatemala/ach_figure_GTM.png", width = 6, height = 3.5, dpi = 300)
 
 
 # Filter IDP households for Guatemala
@@ -164,21 +169,18 @@ ggplot(data_idp_gt, aes(x = achievement)) +
   ) +
   
   labs(
-    y = "Number of Households"
+    y = "Number of Households",
+    x="MPM score"
   ) +
   scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.1)) +
   theme_unhcr() +
   theme(
-    title = element_blank(), 
-    axis.title.x = element_blank()
+    title = element_blank()
   )
 
-ggsave("C:/Users/LEOPOLD/OneDrive - UNHCR/Work/2_EGRISS/ENCV Guatemala/histogram_ach.png", width = 6, height = 3, dpi = 300)
-
-
-
-
+ggsave("C:/Users/LEOPOLD/OneDrive - UNHCR/Work/2_EGRISS/ENCV Guatemala/histogram_ach_GTM.png", width = 6, height = 3, dpi = 300)
 
 
 #EXIT NUMBERS
+
 exit_prebounding <- mean(data_idp_gt$achievement > benchmark, na.rm = TRUE)
